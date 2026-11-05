@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="基于 iztro 真实排盘的紫微斗数单页工具，离线可用，数据不上传。">
+<title>紫微斗数 · 本地排盘</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/styles.css">
+<!-- 主题预置：在样式生效前设置 data-theme，避免暗色用户首屏闪白。纯内联，不加载任何外部资源。 -->
+<script>
+(function () {
+  try {
+    var t = localStorage.getItem('zw.theme');
+    if (t !== 'dark' && t !== 'light') {
+      t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+  } catch (e) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<div class="page">
+
+  <!-- ══════════════ 顶栏 ══════════════ -->
+  <header class="topbar">
+    <div class="brand">
+      <h1 class="brand__title">紫微斗数</h1>
+      <p class="brand__sub">本地排盘 · 数据不出浏览器</p>
+    </div>
+    <!-- 图标 1/3：主题切换（内联 SVG，1.5px stroke / currentColor） -->
+    <button id="theme-toggle" class="icon-btn" type="button" aria-label="切换到深色主题" title="切换主题">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+           stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <g class="ico-sun">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </g>
+        <path class="ico-moon" d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"></path>
+      </svg>
+    </button>
+  </header>
+
+  <main id="main">
+
+    <!-- ══════════════ 出生信息表单 ══════════════ -->
+    <section class="card form-card" aria-labelledby="form-title">
+      <h2 id="form-title" class="section-title">出生信息</h2>
+      <form id="birth-form" novalidate>
+        <div class="form-grid">
+          <div class="field">
+            <label for="f-date">公历出生日期</label>
+            <input id="f-date" name="date" type="date" min="1900-01-01" max="2100-12-31" required>
+            <span class="field__err" data-err="date"></span>
+          </div>
+          <div class="field">
+            <label for="f-time">出生时辰</label>
+            <select id="f-time" name="time" required>
+              <option value="" selected>请选择时辰</option>
+              <option value="0">子时 · 23:00–01:00</option>
+              <option value="1">丑时 · 01:00–03:00</option>
+              <option value="2">寅时 · 03:00–05:00</option>
+              <option value="3">卯时 · 05:00–07:00</option>
+              <option value="4">辰时 · 07:00–09:00</option>
+              <option value="5">巳时 · 09:00–11:00</option>
+              <option value="6">午时 · 11:00–13:00</option>
+              <option value="7">未时 · 13:00–15:00</option>
+              <option value="8">申时 · 15:00–17:00</option>
+              <option value="9">酉时 · 17:00–19:00</option>
+              <option value="10">戌时 · 19:00–21:00</option>
+              <option value="11">亥时 · 21:00–23:00</option>
+            </select>
+            <span class="field__err" data-err="time"></span>
+          </div>
+          <div class="field">
+            <label for="f-gender">性别</label>
+            <select id="f-gender" name="gender" required>
+              <option value="男" selected>男</option>
+              <option value="女">女</option>
+            </select>
+            <span class="field__err" data-err="gender"></span>
+          </div>
+          <div class="field">
+            <label for="f-name">姓名 <span class="field__opt">选填</span></label>
+            <input id="f-name" name="name" type="text" maxlength="20"
+                   placeholder="仅用于盘面显示" autocomplete="off">
+            <span class="field__err" data-err="name"></span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary" id="btn-cast">开始排盘</button>
+          <button type="button" class="btn btn--ghost" id="btn-share">复制分享链接</button>
+        </div>
+
+        <!-- 剪贴板不可用时的降级：显示可选中文本的链接 -->
+        <div id="share-box" class="share-box" hidden>
+          <label for="share-url">复制下面的分享链接</label>
+          <input id="share-url" type="text" readonly spellcheck="false">
+        </div>
+
+        <div class="examples" id="examples">
+          <span class="examples__label">示例盘</span>
+          <button type="button" class="chip" data-example="0">2000 · 寅时 · 男</button>
+          <button type="button" class="chip" data-example="1">1990 · 午时 · 女</button>
+          <button type="button" class="chip" data-example="2">1988 · 子时 · 男</button>
+        </div>
+
+        <p id="form-msg" class="form-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- ══════════════ 命盘 ══════════════ -->
+    <section class="chart-section" aria-labelledby="chart-title">
+      <div class="chart-head">
+        <h2 id="chart-title" class="section-title">命盘</h2>
+        <div class="segmented" id="mode-seg" role="group" aria-label="盘面类型" data-active="0">
+          <span class="segmented__thumb" aria-hidden="true"></span>
+          <button type="button" class="segmented__item is-active" data-mode="natal" aria-pressed="true">本命</button>
+          <button type="button" class="segmented__item" data-mode="decadal" aria-pressed="false">大限</button>
+          <button type="button" class="segmented__item" data-mode="yearly" aria-pressed="false">流年</button>
+        </div>
+      </div>
+
+      <p id="chart-note" class="chart-note" aria-live="polite"></p>
+
+      <div id="chart" class="chart" role="grid" aria-label="紫微斗数十二宫命盘" hidden></div>
+      <p id="chart-empty" class="empty-state">填写出生信息后点击「开始排盘」，即可查看十二宫命盘；也可直接点上方示例盘体验。</p>
+
+      <p class="hint">
+        <!-- 图标 3/3：展开详情提示（内联 SVG，1.5px stroke / currentColor） -->
+        <svg class="hint__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 6l6 6-6 6"></path>
+        </svg>
+        点击任意宫格查看完整星曜、亮度四化、长生博士十二神与对宫借星
+      </p>
+
+      <!-- 图例 -->
+      <section class="legend" aria-label="命盘图例">
+        <span class="legend__group">
+          <span class="legend__label">亮度</span>
+          <sup class="badge badge--brightness" data-level="strong">庙</sup>
+          <sup class="badge badge--brightness" data-level="mid">平</sup>
+          <sup class="badge badge--brightness" data-level="weak">陷</sup>
+          <span>灰阶三档</span>
+        </span>
+        <span class="legend__group">
+          <span class="legend__label">本命四化</span>
+          <sup class="badge badge--mutagen" data-m="lu">禄</sup>
+          <sup class="badge badge--mutagen" data-m="quan">权</sup>
+          <sup class="badge badge--mutagen" data-m="ke">科</sup>
+          <sup class="badge badge--mutagen" data-m="ji">忌</sup>
+        </span>
+        <span class="legend__group">
+          <span class="legend__label">运限四化</span>
+          <sup class="badge badge--mutagen" data-m="lu" data-kind="horoscope">禄</sup>
+          <span>透明底描边</span>
+        </span>
+      </section>
+    </section>
+
+  </main>
+
+  <!-- ══════════════ 页脚：MIT 致谢（纯文本，无外链） ══════════════ -->
+  <footer class="footer">
+    <p>排盘引擎：<strong>iztro</strong>（MIT，随项目附带于 vendor/iztro.min.js）· 上游项目：<strong>Renhuai123/ziwei-doushu</strong>（MIT）。许可证全文见仓库 LICENSE 与 vendor/LICENSE-iztro.txt。</p>
+    <p>本工具仅呈现排盘数据与通用星曜名词释义，不构成任何命理断语或运势结论。全部计算在浏览器本地完成，不联网、不上传任何数据。</p>
+  </footer>
+
+</div>
+
+<!-- ══════════════ 宫位详情浮层 ══════════════ -->
+<div id="detail" class="overlay" hidden>
+  <div class="overlay__mask" data-close></div>
+  <div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-title" tabindex="-1">
+    <header class="pop__head">
+      <div>
+        <h2 id="pop-title" class="pop__title">宫位详情</h2>
+        <p id="pop-sub" class="pop__sub"></p>
+      </div>
+      <!-- 图标 2/3：关闭浮层（内联 SVG，1.5px stroke / currentColor） -->
+      <button type="button" class="icon-btn pop__close" data-close aria-label="关闭详情">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18"></path>
+        </svg>
+      </button>
+    </header>
+    <div id="pop-body" class="pop__body" tabindex="0" role="region" aria-label="宫位详情内容"></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- 脚本顺序固定：vendor → engine → chart → app（全部普通 <script> 相对路径，file:// 可用） -->
+<script src="vendor/iztro.min.js"></script>
+<script src="assets/js/engine.js"></script>
+<script src="assets/js/chart.js"></script>
+<script src="assets/js/app.js"></script>
+
+</body>
+</html>

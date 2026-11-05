@@ -1,0 +1,24 @@
+# 系统生成文件
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+desktop.ini
+
+# 依赖与日志
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器与临时文件
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.tmp
+
+# 说明：vendor/ 必须随仓库提交（离线排盘依赖），切勿忽略
+# 说明：.nojekyll 必须随仓库提交（GitHub Pages 需要）

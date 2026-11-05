@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-labelledby="t">
+  <title id="t">紫微斗数命盘</title>
+  <!-- 4×4 十二宫轮廓 + 中央 2×2 留空中宫；单色、1.5px stroke、无渐变、无外部资源 -->
+  <g fill="none" stroke="#1D1D1F" stroke-width="1.5" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M2 2 H30 V30 H2 Z"/>
+    <path d="M9 2 V30 M23 2 V30 M2 9 H30 M2 23 H30"/>
+    <path d="M16 2 V9 M16 23 V30 M2 16 H9 M23 16 H30"/>
+  </g>
+</svg>
