@@ -2,6 +2,8 @@
 
 Apple 风格极简、完全离线可用、基于 **iztro 真实排盘**的紫微斗数单页小工具。打开 `index.html` 即用，无需安装、无需构建、无需联网，所有计算都在浏览器本地完成，不上传任何数据。
 
+> 本仓库已部署上线：**https://lovetnt.github.io/zwds/** ｜ 源码：[LoveTNT/zwds](https://github.com/LoveTNT/zwds)
+
 ---
 
 ## 目录结构
@@ -38,15 +40,18 @@ ziwei-doushu-static/
 
 > 若浏览器对本地文件读取有额外限制，可用任意静态服务器打开本目录，但项目本身不依赖服务器。
 
-### ② 部署到 GitHub Pages
+### ② 在线访问（GitHub Pages，已开启）
 
-1. 在 GitHub 新建一个公开仓库（例如 `ziwei-doushu`），不要勾选初始化 README。
+本仓库已开启 GitHub Pages，直接访问 **https://lovetnt.github.io/zwds/** 即可，手机浏览器同样可用。发布配置为 `main` 分支 + `/ (root)` 目录。
+
+若要把同一份项目部署到你自己的另一个仓库，按以下步骤：
+
+1. 在 GitHub 新建一个公开仓库（例如 `zwds`），不要勾选初始化 README。
 2. 在本目录执行：
    ```bash
-   git init
+   git init -b main
    git add .
    git commit -m "init: 紫微斗数静态排盘"
-   git branch -M main
    git remote add origin <你的仓库地址>
    git push -u origin main
    ```
